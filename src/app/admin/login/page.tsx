@@ -1,11 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Stethoscope, Lock, Eye, EyeOff, Loader2, Shield } from "lucide-react"
 
 export default function AdminLoginPage() {
-  const router = useRouter()
   const [password, setPassword] = useState("")
   const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState("")
@@ -22,8 +20,7 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ password }),
       })
       if (res.ok) {
-        router.push("/admin")
-        router.refresh()
+        window.location.href = "/admin"
       } else {
         setError("Incorrect admin password. Please try again.")
       }
