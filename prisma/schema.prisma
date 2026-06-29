@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RepeatSchedule {
+  NONE
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum RefillSchedule {
+  NONE
+  MONTHLY
+  QUARTERLY
+}
+
+model Patient {
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  password    String
+  dateOfBirth DateTime?
+  phone       String?
+  address     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  appointments  Appointment[]
+  prescriptions Prescription[]
+}
+
+model Appointment {
+  id             Int            @id @default(autoincrement())
+  patientId      Int
+  providerName   String
+  dateTime       DateTime
+  repeatSchedule RepeatSchedule @default(NONE)
+  endDate        DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model Prescription {
+  id             Int            @id @default(autoincrement())
+  patientId      Int
+  medicationName String
+  dosage         String
+  quantity       Int
+  refillDate     DateTime
+  refillSchedule RefillSchedule @default(NONE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
