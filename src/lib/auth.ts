@@ -15,9 +15,15 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        const patient = await prisma.patient.findUnique({
-          where: { email: credentials.email },
-        })
+        let patient
+        try {
+          patient = await prisma.patient.findUnique({
+            where: { email: credentials.email },
+          })
+        } catch (e) {
+          console.error("[auth] DB error:", e)
+          return null
+        }
         if (!patient) return null
 
         const passwordMatch = await bcrypt.compare(credentials.password, patient.password)
